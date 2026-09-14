@@ -1,0 +1,58 @@
+{
+  "brand": {
+    "programName": "Green Horizons",
+    "programAka": "Chugei Siyarot",
+    "orgName": "Jewish National Fund-USA",
+    "orgShort": "JNF",
+    "gameTitle": "Guess the Place",
+    "tagline": "How well do you know the map of Israel?",
+    "learnMoreUrl": "https://www.jnf.org/our-work/community-building/green-horizons",
+    "learnMoreTitle": "About Green Horizons",
+    "learnMoreBody": "Green Horizons (Chugei Siyarot) takes Israeli youth on educational hikes and camping trips that build leadership, social responsibility, and a lasting connection to the Land of Israel. Many alumni go on to serve in industry, government, and IDF command roles.",
+    "boothCta": "Visit the Chugei Siyarot booth to learn more and register!",
+    "privacyPolicyUrl": "https://www.jnf.org/privacy-policy"
+  },
+  "game": {
+    "questionsPerGame": 15,
+    "questionsPerDifficulty": {
+      "easy": 5,
+      "medium": 5,
+      "hard": 5
+    },
+    "timerSeconds": {
+      "easy": 30
+    },
+    "maxDistanceScore": 4000,
+    "perfectDistanceKm": 1,
+    "zeroScoreDistanceKm": 180,
+    "distanceDecayK": 36.07,
+    "maxSpeedBonus": 1000,
+    "minSpeedBonus": 50,
+    "speedFullBonusRatio": 0.5,
+    "feedbackAutoAdvanceMs": 8000,
+    "leaderboardTop": 10,
+    "conferenceEndDate": "2026-12-31"
+  },
+  "map": {
+    "center": [
+      31.45,
+      34.85
+    ],
+    "defaultZoom": 8,
+    "minZoom": 7,
+    "maxZoom": 13,
+    "maxBounds": [
+      [
+        29.25,
+        34.1
+      ],
+      [
+        33.55,
+        36.05
+      ]
+    ]
+  },
+  "admin": {
+    "pin": "horizons"
+  }
+}

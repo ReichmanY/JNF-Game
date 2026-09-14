@@ -1,0 +1,546 @@
+{
+  "version": 3,
+  "note": "Replace this sample bank with the official Green Horizons question file. Coordinates are WGS84. All player-facing text is English.",
+  "questions": [
+    {
+      "id": "jerusalem",
+      "name": "Jerusalem",
+      "hint": "Israel's historic capital, home to the Old City and sites sacred to three faiths.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Jerusalem_from_mt_olives.jpg/800px-Jerusalem_from_mt_olives.jpg",
+      "latitude": 31.778,
+      "longitude": 35.229,
+      "difficulty": "easy",
+      "category": "heritage"
+    },
+    {
+      "id": "tel-aviv",
+      "name": "Tel Aviv",
+      "hint": "A Mediterranean coastal city known for Bauhaus buildings, beaches, and nightlife.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/TelAvivPromenade.jpg/800px-TelAvivPromenade.jpg",
+      "latitude": 32.0853,
+      "longitude": 34.7818,
+      "difficulty": "easy",
+      "category": "city"
+    },
+    {
+      "id": "eilat",
+      "name": "Eilat",
+      "hint": "Israel's southernmost resort city, sitting on the Red Sea next to coral reefs.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Eilat_from_above.jpg/800px-Eilat_from_above.jpg",
+      "latitude": 29.5577,
+      "longitude": 34.9519,
+      "difficulty": "easy",
+      "category": "city"
+    },
+    {
+      "id": "dead-sea",
+      "name": "The Dead Sea",
+      "hint": "The lowest place on Earth — a hypersaline lake where visitors float with ease.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Dead_Sea_by_David_Shankbone.jpg/800px-Dead_Sea_by_David_Shankbone.jpg",
+      "latitude": 31.5,
+      "longitude": 35.49,
+      "difficulty": "easy",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "haifa",
+      "name": "Haifa",
+      "hint": "A northern port city climbing the slopes of Mount Carmel, famous for terraced gardens.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Haifa_from_the_air.jpg/800px-Haifa_from_the_air.jpg",
+      "latitude": 32.794,
+      "longitude": 34.9896,
+      "difficulty": "easy",
+      "category": "city"
+    },
+    {
+      "id": "sea-of-galilee",
+      "name": "Sea of Galilee",
+      "hint": "Israel's largest freshwater lake, also called the Kinneret.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sea_of_Galilee_04.jpg/800px-Sea_of_Galilee_04.jpg",
+      "latitude": 32.823,
+      "longitude": 35.583,
+      "difficulty": "easy",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "masada",
+      "name": "Masada",
+      "hint": "A clifftop desert fortress overlooking the Dead Sea, reached by snake path or cable car.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Masada_Roman_Ruins.jpg/800px-Masada_Roman_Ruins.jpg",
+      "latitude": 31.3156,
+      "longitude": 35.3539,
+      "difficulty": "easy",
+      "category": "heritage"
+    },
+    {
+      "id": "beer-sheva",
+      "name": "Be'er Sheva",
+      "hint": "Capital of the Negev and a gateway to Israel's south.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Beersheba_city_hall.jpg/800px-Beersheba_city_hall.jpg",
+      "latitude": 31.253,
+      "longitude": 34.7915,
+      "difficulty": "easy",
+      "category": "city"
+    },
+    {
+      "id": "nazareth",
+      "name": "Nazareth",
+      "hint": "The largest city in the Galilee, known for its ancient basilica and hillside lanes.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Nazareth_BW_13.JPG/800px-Nazareth_BW_13.JPG",
+      "latitude": 32.6996,
+      "longitude": 35.3035,
+      "difficulty": "easy",
+      "category": "city"
+    },
+    {
+      "id": "acre",
+      "name": "Acre (Akko)",
+      "hint": "A walled Crusader port on the northern coast, now a UNESCO World Heritage site.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Old_Akko_from_the_sea.jpg/800px-Old_Akko_from_the_sea.jpg",
+      "latitude": 32.9276,
+      "longitude": 35.0818,
+      "difficulty": "easy",
+      "category": "heritage"
+    },
+    {
+      "id": "caesarea",
+      "name": "Caesarea",
+      "hint": "A Roman harbor city with a seaside amphitheater built by Herod the Great.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Caesarea_Maritima_BW_10.JPG/800px-Caesarea_Maritima_BW_10.JPG",
+      "latitude": 32.501,
+      "longitude": 34.892,
+      "difficulty": "easy",
+      "category": "heritage"
+    },
+    {
+      "id": "jaffa",
+      "name": "Jaffa",
+      "hint": "One of the world's oldest ports, now adjoining Tel Aviv's southern shoreline.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Jaffa_port.jpg/800px-Jaffa_port.jpg",
+      "latitude": 32.0522,
+      "longitude": 34.7504,
+      "difficulty": "easy",
+      "category": "heritage"
+    },
+    {
+      "id": "tiberias",
+      "name": "Tiberias",
+      "hint": "A lakeside city on the western shore of the Sea of Galilee.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Tiberias_P1180786.JPG/800px-Tiberias_P1180786.JPG",
+      "latitude": 32.7959,
+      "longitude": 35.531,
+      "difficulty": "easy",
+      "category": "city"
+    },
+    {
+      "id": "mitzpe-ramon",
+      "name": "Mitzpe Ramon",
+      "hint": "A small Negev town perched on the rim of a vast erosion crater.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Makhtesh_Ramon_2.jpg/800px-Makhtesh_Ramon_2.jpg",
+      "latitude": 30.6094,
+      "longitude": 34.8011,
+      "difficulty": "easy",
+      "category": "lookout"
+    },
+    {
+      "id": "rosh-hanikra",
+      "name": "Rosh Hanikra",
+      "hint": "White chalk cliffs and sea grottoes on Israel's northern Mediterranean border.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Rosh_HaNikra_grottoes.jpg/800px-Rosh_HaNikra_grottoes.jpg",
+      "latitude": 33.093,
+      "longitude": 35.104,
+      "difficulty": "easy",
+      "category": "lookout"
+    },
+    {
+      "id": "mount-hermon",
+      "name": "Mount Hermon",
+      "hint": "Israel's highest peak — and its only ski resort in winter.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Mount_Hermon.JPG/800px-Mount_Hermon.JPG",
+      "latitude": 33.314,
+      "longitude": 35.822,
+      "difficulty": "easy",
+      "category": "lookout"
+    },
+    {
+      "id": "sde-boker",
+      "name": "Sde Boker",
+      "hint": "A Negev kibbutz closely tied to David Ben-Gurion, who is buried nearby.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Sde_Boker_Ben_Gurion_Tomb.jpg/800px-Sde_Boker_Ben_Gurion_Tomb.jpg",
+      "latitude": 30.874,
+      "longitude": 34.792,
+      "difficulty": "easy",
+      "category": "heritage"
+    },
+    {
+      "id": "eilat-coral-beach",
+      "name": "Coral Beach, Eilat",
+      "hint": "A Red Sea reserve where snorkelers swim above a living coral reef.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Eilat_Coral_Beach.jpg/800px-Eilat_Coral_Beach.jpg",
+      "latitude": 29.51,
+      "longitude": 34.927,
+      "difficulty": "easy",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "ramat-hanadiv",
+      "name": "Ramat Hanadiv",
+      "hint": "Memorial gardens near Zichron Ya'akov, with an ancient aqueduct just below the ridge.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Ramat_Hanadiv_gardens.jpg/800px-Ramat_Hanadiv_gardens.jpg",
+      "latitude": 32.553,
+      "longitude": 34.944,
+      "difficulty": "medium",
+      "category": "heritage"
+    },
+    {
+      "id": "yatir-forest",
+      "name": "Yatir Forest",
+      "hint": "Israel's largest planted forest, growing against the edge of the desert.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Yatir_forest.jpg/800px-Yatir_forest.jpg",
+      "latitude": 31.347,
+      "longitude": 35.062,
+      "difficulty": "medium",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "canada-park",
+      "name": "Canada Park",
+      "hint": "A JNF park in the Ayalon Valley with springs, picnic groves, and ancient ruins.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Canada_Park_Israel.jpg/800px-Canada_Park_Israel.jpg",
+      "latitude": 31.839,
+      "longitude": 35.005,
+      "difficulty": "medium",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "ben-shemen-forest",
+      "name": "Ben Shemen Forest",
+      "hint": "A popular picnic woodland between Tel Aviv and Jerusalem, laced with bike trails.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Ben_Shemen_forest.jpg/800px-Ben_Shemen_forest.jpg",
+      "latitude": 31.95,
+      "longitude": 34.957,
+      "difficulty": "medium",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "ein-gedi",
+      "name": "Ein Gedi",
+      "hint": "A desert oasis with waterfalls and ibex, tucked against the Dead Sea cliffs.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Ein_Gedi_waterfall.jpg/800px-Ein_Gedi_waterfall.jpg",
+      "latitude": 31.451,
+      "longitude": 35.384,
+      "difficulty": "medium",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "banias",
+      "name": "Banias (Hermon Stream)",
+      "hint": "Powerful springs and a waterfall at the foot of Mount Hermon, once a Roman sanctuary.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Banias_waterfall.jpg/800px-Banias_waterfall.jpg",
+      "latitude": 33.249,
+      "longitude": 35.694,
+      "difficulty": "medium",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "tel-dan",
+      "name": "Tel Dan",
+      "hint": "A lush northern reserve with one of the oldest arched gates ever found.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tel_Dan_gate.jpg/800px-Tel_Dan_gate.jpg",
+      "latitude": 33.249,
+      "longitude": 35.652,
+      "difficulty": "medium",
+      "category": "heritage"
+    },
+    {
+      "id": "timna-park",
+      "name": "Timna Park",
+      "hint": "Ancient copper mines and red sandstone formations in the southern Arava.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Timna_Park_Solomon_Pillars.jpg/800px-Timna_Park_Solomon_Pillars.jpg",
+      "latitude": 29.788,
+      "longitude": 34.987,
+      "difficulty": "medium",
+      "category": "heritage"
+    },
+    {
+      "id": "hula-valley",
+      "name": "Hula Valley",
+      "hint": "Restored wetlands on a major bird-migration highway between Africa and Europe.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Hula_Valley_cranes.jpg/800px-Hula_Valley_cranes.jpg",
+      "latitude": 33.073,
+      "longitude": 35.599,
+      "difficulty": "medium",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "mount-tabor",
+      "name": "Mount Tabor",
+      "hint": "A distinctive dome-shaped mountain rising alone from the Lower Galilee.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Mount_Tabor_093013.jpg/800px-Mount_Tabor_093013.jpg",
+      "latitude": 32.687,
+      "longitude": 35.391,
+      "difficulty": "medium",
+      "category": "lookout"
+    },
+    {
+      "id": "jerusalem-forest",
+      "name": "Jerusalem Forest",
+      "hint": "A JNF green belt on the western edge of the capital, planted after 1948.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Jerusalem_forest.jpg/800px-Jerusalem_forest.jpg",
+      "latitude": 31.775,
+      "longitude": 35.176,
+      "difficulty": "medium",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "british-park",
+      "name": "British Park",
+      "hint": "A rolling JNF park in the Judean foothills, planted with the help of UK donors.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/British_Park_Israel.jpg/800px-British_Park_Israel.jpg",
+      "latitude": 31.65,
+      "longitude": 34.917,
+      "difficulty": "medium",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "eshtaol-forest",
+      "name": "Eshtaol Forest",
+      "hint": "A woodland in the Jerusalem hills, a favorite starting point for family hikes.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Eshtaol_forest.jpg/800px-Eshtaol_forest.jpg",
+      "latitude": 31.78,
+      "longitude": 35.01,
+      "difficulty": "medium",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "mount-meron",
+      "name": "Mount Meron",
+      "hint": "The highest peak in the Galilee, covered in Mediterranean woodland.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Mount_Meron.jpg/800px-Mount_Meron.jpg",
+      "latitude": 32.997,
+      "longitude": 35.417,
+      "difficulty": "medium",
+      "category": "lookout"
+    },
+    {
+      "id": "hai-bar-carmel",
+      "name": "Hai-Bar Carmel",
+      "hint": "A wildlife breeding reserve on Mount Carmel, home to animals once native to the region.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Hai_Bar_Carmel.jpg/800px-Hai_Bar_Carmel.jpg",
+      "latitude": 32.754,
+      "longitude": 35.017,
+      "difficulty": "medium",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "mount-arbel",
+      "name": "Mount Arbel",
+      "hint": "Sheer cliffs and cave strongholds overlooking the western shore of the Kinneret.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Arbel_cliff.jpg/800px-Arbel_cliff.jpg",
+      "latitude": 32.824,
+      "longitude": 35.501,
+      "difficulty": "medium",
+      "category": "lookout"
+    },
+    {
+      "id": "avdat",
+      "name": "Avdat",
+      "hint": "A ruined Nabataean city on the ancient Incense Route through the Negev highlands.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Avdat_overview.jpg/800px-Avdat_overview.jpg",
+      "latitude": 30.794,
+      "longitude": 34.773,
+      "difficulty": "medium",
+      "category": "heritage"
+    },
+    {
+      "id": "beit-guvrin",
+      "name": "Beit Guvrin",
+      "hint": "A labyrinth of bell caves and underground complexes in the Judean lowlands.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Beit_Guvrin_bell_cave.jpg/800px-Beit_Guvrin_bell_cave.jpg",
+      "latitude": 31.613,
+      "longitude": 34.895,
+      "difficulty": "medium",
+      "category": "heritage"
+    },
+    {
+      "id": "martyrs-forest",
+      "name": "Martyrs' Forest",
+      "hint": "A JNF forest in the Jerusalem hills planted in memory of Holocaust victims.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Martyrs_Forest.jpg/800px-Martyrs_Forest.jpg",
+      "latitude": 31.797,
+      "longitude": 35.071,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "aminadav-forest",
+      "name": "Aminadav Forest",
+      "hint": "A Jerusalem-mountains forest with sweeping views toward the coastal plain.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Aminadav_forest.jpg/800px-Aminadav_forest.jpg",
+      "latitude": 31.751,
+      "longitude": 35.142,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "birya-forest",
+      "name": "Birya Forest",
+      "hint": "One of the Galilee's largest planted forests, looking out toward the Hula and the Kinneret.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Birya_forest.jpg/800px-Birya_forest.jpg",
+      "latitude": 32.987,
+      "longitude": 35.503,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "lahav-forest",
+      "name": "Lahav Forest",
+      "hint": "A planted woodland in the northern Negev, near an archaeological mound and Joe Alon Center.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Lahav_forest.jpg/800px-Lahav_forest.jpg",
+      "latitude": 31.38,
+      "longitude": 34.87,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "ilanot-arboretum",
+      "name": "Ilanot Forest",
+      "hint": "A JNF arboretum in the Sharon where researchers test trees from around the world.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Ilanot_forest.jpg/800px-Ilanot_forest.jpg",
+      "latitude": 32.292,
+      "longitude": 34.9,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "hulda-forest",
+      "name": "Hulda Forest",
+      "hint": "A historic JNF planting site in the Judean lowlands, beside a veteran agricultural community.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Hulda_forest.jpg/800px-Hulda_forest.jpg",
+      "latitude": 31.832,
+      "longitude": 34.883,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "beit-keshet-forest",
+      "name": "Beit Keshet Forest",
+      "hint": "A Galilee forest on the slopes of Mount Tabor, popular with hikers and cyclists.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Beit_Keshet_forest.jpg/800px-Beit_Keshet_forest.jpg",
+      "latitude": 32.718,
+      "longitude": 35.395,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "american-independence-park",
+      "name": "American Independence Park",
+      "hint": "A JNF park between Jerusalem and Beit Shemesh, dedicated by American donors.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/American_Independence_Park.jpg/800px-American_Independence_Park.jpg",
+      "latitude": 31.727,
+      "longitude": 35.002,
+      "difficulty": "hard",
+      "category": "jnf-forest"
+    },
+    {
+      "id": "neot-kedumim",
+      "name": "Neot Kedumim",
+      "hint": "A biblical landscape reserve that recreates the plants and agriculture of ancient Israel.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Neot_Kedumim.jpg/800px-Neot_Kedumim.jpg",
+      "latitude": 31.947,
+      "longitude": 34.973,
+      "difficulty": "hard",
+      "category": "heritage"
+    },
+    {
+      "id": "castel",
+      "name": "Castel National Park",
+      "hint": "A hilltop fortress on the old road to Jerusalem, remembered for a key 1948 battle.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Castel_Israel.jpg/800px-Castel_Israel.jpg",
+      "latitude": 31.796,
+      "longitude": 35.144,
+      "difficulty": "hard",
+      "category": "heritage"
+    },
+    {
+      "id": "sataf",
+      "name": "Sataf",
+      "hint": "Restored hillside terraces and ancient irrigation in the Jerusalem mountains.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Sataf_terraces.jpg/800px-Sataf_terraces.jpg",
+      "latitude": 31.769,
+      "longitude": 35.128,
+      "difficulty": "hard",
+      "category": "trail"
+    },
+    {
+      "id": "keshet-cave",
+      "name": "Keshet Cave",
+      "hint": "A dramatic natural limestone arch on the Adamit ridge in the Western Galilee.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Keshet_Cave.jpg/800px-Keshet_Cave.jpg",
+      "latitude": 33.036,
+      "longitude": 35.174,
+      "difficulty": "hard",
+      "category": "lookout"
+    },
+    {
+      "id": "little-switzerland",
+      "name": "Little Switzerland, Carmel",
+      "hint": "A rugged ravine of pines and cliffs in the Carmel range, named for its alpine look.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Little_Switzerland_Carmel.jpg/800px-Little_Switzerland_Carmel.jpg",
+      "latitude": 32.728,
+      "longitude": 35.044,
+      "difficulty": "hard",
+      "category": "trail"
+    },
+    {
+      "id": "gamla",
+      "name": "Gamla",
+      "hint": "A cliffside ancient city in the Golan, known for griffin vultures and a waterfall.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Gamla_nature_reserve.jpg/800px-Gamla_nature_reserve.jpg",
+      "latitude": 32.902,
+      "longitude": 35.746,
+      "difficulty": "hard",
+      "category": "heritage"
+    },
+    {
+      "id": "soreq-cave",
+      "name": "Soreq Cave",
+      "hint": "A hidden stalactite cave in the Judean hills, discovered while quarrying in 1968.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Soreq_Cave.jpg/800px-Soreq_Cave.jpg",
+      "latitude": 31.756,
+      "longitude": 35.037,
+      "difficulty": "hard",
+      "category": "nature-reserve"
+    },
+    {
+      "id": "nimrod-fortress",
+      "name": "Nimrod Fortress",
+      "hint": "A massive medieval castle commanding the road to Mount Hermon.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Nimrod_Fortress.jpg/800px-Nimrod_Fortress.jpg",
+      "latitude": 33.253,
+      "longitude": 35.714,
+      "difficulty": "hard",
+      "category": "heritage"
+    },
+    {
+      "id": "mount-gilboa",
+      "name": "Mount Gilboa",
+      "hint": "A ridge above the Jezreel Valley, famous in spring for wild irises.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mount_Gilboa.jpg/800px-Mount_Gilboa.jpg",
+      "latitude": 32.545,
+      "longitude": 35.409,
+      "difficulty": "hard",
+      "category": "lookout"
+    },
+    {
+      "id": "yad-kennedy",
+      "name": "Yad Kennedy",
+      "hint": "A circular JNF memorial in the Jerusalem forest, shaped like a tree stump cut down.",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Yad_Kennedy.jpg/800px-Yad_Kennedy.jpg",
+      "latitude": 31.749,
+      "longitude": 35.14,
+      "difficulty": "hard",
+      "category": "heritage"
+    }
+  ]
+}

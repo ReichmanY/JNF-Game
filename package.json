@@ -1,0 +1,25 @@
+{
+  "name": "green-horizons-map-game",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Green Horizons — Guess the Place. A geographic map-guessing game for the JNF-USA annual conference.",
+  "scripts": {
+    "dev": "concurrently -k \"node server/index.js --dev\" \"vite\"",
+    "dev:client": "vite",
+    "dev:server": "node server/index.js --dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server/index.js",
+    "package:win": "node scripts/package-windows.mjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "vite": "^6.2.5"
+  }
+}
