@@ -7,6 +7,9 @@ export default defineConfig({
     proxy: {
       "/api": "http://127.0.0.1:3001",
     },
+    watch: {
+      ignored: ["**/public/logos/**"],
+    },
   },
   preview: {
     port: 4173,

@@ -1,7 +1,9 @@
 import { createIsraelMap } from "./map.js";
 import { createApi } from "./api.js";
+import { brandBar } from "./brand.js";
 import { validateGuest, validateRegistered, firstError } from "./validate.js";
 import { formatDistance, formatScore } from "../shared/geo.js";
+import { APP_VERSION_LABEL } from "../shared/version.js";
 import { scoreGuess, timerFor, sanitizeQuestion } from "../shared/scoring.js";
 
 const DIFF_LABEL = { easy: "Easy", medium: "Medium", hard: "Hard" };
@@ -60,28 +62,20 @@ export function createApp(root, { config, questions }) {
   }
 
   function landing() {
+    const n = game.questionsPerGame || 10;
     return `
       <section class="screen landing">
-        <div class="brand-row">
-          <img src="/logo.svg" alt="" />
-          <div>
-            <div class="eyebrow">${brand.orgShort} · ${brand.programName}</div>
-            <div class="tiny muted" style="color:#e8dfcc">Also known as ${brand.programAka}</div>
-          </div>
-        </div>
+        ${brandBar()}
         <div class="hero">
           <div class="eyebrow">Map challenge</div>
           <h1>${brand.gameTitle}</h1>
-          <p>${brand.tagline} Fifteen places. Rising difficulty. Tap the map of Israel and race the clock.</p>
+          <p>${brand.tagline} ${n} places. Rising difficulty. Tap the map of Israel and race the clock.</p>
         </div>
         <div class="landing-actions">
           <button class="btn btn-primary btn-wide" data-go="identity">Start Game</button>
-          <span class="tiny" style="color:#e8dfcc">Built for the annual conference · Play on phone, tablet, or desktop</span>
+          <span class="tiny muted">Built for the annual conference · Play on phone, tablet, or desktop</span>
+          <span class="version-tag">${APP_VERSION_LABEL}</span>
         </div>
-        <svg class="horizon-art" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 80 C 60 40, 110 90, 170 60 C 220 38, 260 78, 310 52 C 350 36, 380 58, 400 44 V 120 H 0 Z" fill="#14301f"/>
-          <path d="M0 96 C 80 70, 140 110, 210 84 C 270 64, 330 100, 400 78 V 120 H 0 Z" fill="#1b4d32"/>
-        </svg>
       </section>
     `;
   }
@@ -90,6 +84,7 @@ export function createApp(root, { config, questions }) {
     const { mode, name, email, phone, consent } = state.form;
     return `
       <section class="screen sheet">
+        ${brandBar()}
         <div class="sheet-inner">
           <div class="eyebrow">${brand.programName}</div>
           <h1>Who is playing?</h1>
@@ -134,16 +129,21 @@ export function createApp(root, { config, questions }) {
   }
 
   function howTo() {
+    const n = game.questionsPerGame || 10;
+    const confirmText = game.requireGuessConfirm
+      ? "Drop a pin on your best guess, then confirm that location. You can drag the pin to adjust."
+      : "Tap the map once to place your guess. That tap is scored immediately.";
     return `
       <section class="screen sheet">
+        ${brandBar()}
         <div class="sheet-inner">
           <div class="eyebrow">How to play</div>
           <h1>Guess the location of each place on the map of Israel.</h1>
           <div class="card-list">
             <article class="how-card"><div class="num">1</div><div><strong>Read the clue</strong><p class="muted tiny">Each round names a place, with a short hint and photo when available.</p></div></article>
-            <article class="how-card"><div class="num">2</div><div><strong>Tap the map, then submit</strong><p class="muted tiny">Drop a pin on your best guess and press Submit Guess. You can drag the pin to adjust.</p></div></article>
+            <article class="how-card"><div class="num">2</div><div><strong>Tap the map${game.requireGuessConfirm ? ", then confirm" : ""}</strong><p class="muted tiny">${confirmText}</p></div></article>
             <article class="how-card"><div class="num">3</div><div><strong>Accuracy + speed</strong><p class="muted tiny">Closer and faster scores more — up to 5,000 points per place. The clock is visible on every question.</p></div></article>
-            <article class="how-card"><div class="num">4</div><div><strong>15 questions, rising challenge</strong><p class="muted tiny">Five easy, five medium, five hard. If time runs out, that question scores zero.</p></div></article>
+            <article class="how-card"><div class="num">4</div><div><strong>${n} questions, rising challenge</strong><p class="muted tiny">Difficulty increases through the round. If time runs out, that question scores zero.</p></div></article>
           </div>
           <button class="btn btn-primary btn-wide" data-action="begin">Start</button>
         </div>
@@ -194,12 +194,25 @@ export function createApp(root, { config, questions }) {
       const last = state.index + 1 >= (state.round.length || game.questionsPerGame);
       return `<button class="btn btn-primary btn-wide" data-action="next">${last ? "See results" : "Next question"}</button>`;
     }
-    return `<button class="btn btn-primary btn-wide" data-action="submit" ${state.guess ? "" : "disabled"}>Submit Guess</button>`;
+    if (game.requireGuessConfirm) {
+      if (!state.guess) {
+        return `<p class="confirm-hint">Tap the map to place your guess, then confirm it.</p>`;
+      }
+      return `
+        <div class="confirm-bar">
+          <p>Confirm this location?</p>
+          <button class="btn btn-primary" data-action="submit">Confirm</button>
+          <button class="btn btn-ghost" data-action="move">Move pin</button>
+        </div>
+      `;
+    }
+    return `<p class="confirm-hint">Tap the map to place your guess.</p>`;
   }
 
   function play() {
     return `
       <section class="screen play">
+        ${brandBar()}
         <div class="play-top">${playTopHTML()}</div>
         <div class="play-body">
           ${state.feedback ? feedbackHTML() : clueHTML()}
@@ -222,6 +235,9 @@ export function createApp(root, { config, questions }) {
     bindImageFallback();
     root.querySelector("[data-action='submit']")?.addEventListener("click", () => submitGuess());
     root.querySelector("[data-action='next']")?.addEventListener("click", () => advance());
+    root.querySelector("[data-action='move']")?.addEventListener("click", () => {
+      state.map?.enableClicks(true);
+    });
     if (state.feedback) {
       state.map.enableClicks(false);
       state.map.showResult(state.guess, {
@@ -268,6 +284,7 @@ export function createApp(root, { config, questions }) {
 
     return `
       <section class="screen results">
+        ${brandBar()}
         <div class="results-inner">
           <div class="score-hero">
             <div class="eyebrow">Total score</div>
@@ -443,8 +460,19 @@ export function createApp(root, { config, questions }) {
     state.map = createIsraelMap(el, config.map);
     state.map.setOnGuess((guess) => {
       state.guess = guess;
-      const btn = root.querySelector("[data-action='submit']");
-      if (btn) btn.disabled = false;
+      if (state.feedback || state.busy) return;
+      if (game.requireGuessConfirm) {
+        const bottom = root.querySelector(".play-bottom");
+        if (bottom) {
+          bottom.innerHTML = playBottomHTML();
+          root.querySelector("[data-action='submit']")?.addEventListener("click", () => submitGuess());
+          root.querySelector("[data-action='move']")?.addEventListener("click", () => {
+            state.map?.enableClicks(true);
+          });
+        }
+        return;
+      }
+      submitGuess();
     });
     if (state.feedback) {
       state.map.enableClicks(false);
@@ -532,6 +560,7 @@ export function createApp(root, { config, questions }) {
   async function submitGuess() {
     if (!state.guess || state.feedback || state.busy) return;
     state.busy = true;
+    state.map?.enableClicks(false);
     teardownTimers();
     const elapsed = Date.now() - state.startedAt;
     try {

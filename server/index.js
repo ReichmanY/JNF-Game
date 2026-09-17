@@ -5,8 +5,9 @@ import { randomUUID } from "node:crypto";
 import { appRoot } from "./paths.js";
 import express from "express";
 import cors from "cors";
-import { pickRound, scoreGuess, sanitizeQuestion, timerFor } from "../shared/scoring.js";
-import { publicBoard, readStore, toCsv, upsertScore } from "./store.js";
+import { pickRound, scoreGuess, sanitizeQuestion, timerFor, splitDifficulties } from "../shared/scoring.js";
+import { APP_VERSION, APP_VERSION_LABEL } from "../shared/version.js";
+import { clearPlayers, maybeResetLeaderboard, publicBoard, readStore, toCsv, upsertScore } from "./store.js";
 import {
   getConfig,
   getQuestion,
@@ -29,8 +30,12 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "12mb" }));
 
+async function withStore() {
+  return maybeResetLeaderboard(getConfig().admin?.leaderboardReset || "never");
+}
+
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "green-horizons" });
+  res.json({ ok: true, service: "green-horizons", version: APP_VERSION });
 });
 
 app.post("/api/session", (req, res) => {
@@ -127,6 +132,7 @@ app.post("/api/complete", async (req, res) => {
   }
   session.status = "complete";
   const totalScore = session.guesses.reduce((sum, g) => sum + g.questionScore, 0);
+  await withStore();
   const saved = await upsertScore(session.player, totalScore);
   const store = await readStore();
   const sorted = [...store.players].sort((a, b) => b.highScore - a.highScore);
@@ -151,6 +157,7 @@ app.post("/api/join", async (req, res) => {
   if (!player || !Number.isFinite(totalScore)) {
     return res.status(400).json({ error: "Invalid join request." });
   }
+  await withStore();
   const saved = await upsertScore(player, totalScore);
   const store = await readStore();
   const sorted = [...store.players].sort((a, b) => b.highScore - a.highScore);
@@ -165,7 +172,7 @@ app.post("/api/join", async (req, res) => {
 
 app.get("/api/leaderboard", async (req, res) => {
   const limit = Number(req.query.limit) || getConfig().game.leaderboardTop;
-  const store = await readStore();
+  const store = await withStore();
   const sorted = [...store.players].sort((a, b) => b.highScore - a.highScore);
   res.json({
     playerCount: sorted.length,
@@ -175,7 +182,7 @@ app.get("/api/leaderboard", async (req, res) => {
 
 app.get("/api/admin/players", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
-  const store = await readStore();
+  const store = await withStore();
   const players = [...store.players].sort((a, b) => b.highScore - a.highScore);
   res.json({
     players,
@@ -189,11 +196,31 @@ app.get("/api/admin/players", async (req, res) => {
 
 app.get("/api/admin/export", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
-  const store = await readStore();
+  const store = await withStore();
   const players = [...store.players].sort((a, b) => b.highScore - a.highScore);
   res.setHeader("Content-Type", "text/csv");
   res.setHeader("Content-Disposition", "attachment; filename=green-horizons-leaderboard.csv");
   res.send(toCsv(players));
+});
+
+app.delete("/api/admin/players", async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
+  const store = await clearPlayers();
+  res.json({
+    ok: true,
+    players: store.players,
+    stats: { players: 0, plays: 0, topScore: 0 },
+  });
+});
+
+app.post("/api/admin/players/clear", async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
+  const store = await clearPlayers();
+  res.json({
+    ok: true,
+    players: store.players,
+    stats: { players: 0, plays: 0, topScore: 0 },
+  });
 });
 
 app.get("/api/admin/content", (req, res) => {
@@ -300,8 +327,9 @@ server.on("error", (err) => {
 server.listen(PORT, () => {
   const gameUrl = `http://127.0.0.1:${PORT}/`;
   const adminUrl = `http://127.0.0.1:${PORT}/admin.html`;
-  console.log(`Green Horizons ${isDev ? "API" : "server"} listening on ${gameUrl}`);
+  console.log(`Green Horizons ${APP_VERSION_LABEL} ${isDev ? "API" : "server"} listening on ${gameUrl}`);
   if (isDesktop) {
+    console.log(`Version ${APP_VERSION}`);
     console.log(`Game:  ${gameUrl}`);
     console.log(`Admin: ${adminUrl}`);
     console.log("Close this window to stop.");
@@ -338,17 +366,25 @@ function mergeConfig(current, patch) {
   if (patch.brand) Object.assign(next.brand, patch.brand);
   if (patch.game) {
     Object.assign(next.game, patch.game);
-    if (patch.game.questionsPerDifficulty) {
-      Object.assign(next.game.questionsPerDifficulty, patch.game.questionsPerDifficulty);
-    }
     if (patch.game.timerSeconds) {
       Object.assign(next.game.timerSeconds, patch.game.timerSeconds);
     }
-    const counts = next.game.questionsPerDifficulty;
-    next.game.questionsPerGame = Number(counts.easy) + Number(counts.medium) + Number(counts.hard);
+    const n = Number(patch.game.questionsPerGame ?? next.game.questionsPerGame ?? 10);
+    next.game.questionsPerGame = Math.max(1, Math.round(n));
+    const split = splitDifficulties(next.game.questionsPerGame);
+    next.game.questionsPerDifficulty = {
+      easy: split.easy,
+      medium: split.medium,
+      hard: split.hard,
+    };
+    next.game.requireGuessConfirm = Boolean(
+      patch.game.requireGuessConfirm ?? next.game.requireGuessConfirm
+    );
   }
   if (patch.map) Object.assign(next.map, patch.map);
   if (patch.admin) Object.assign(next.admin, patch.admin);
+  const reset = next.admin.leaderboardReset || "never";
+  if (!["never", "daily", "monthly"].includes(reset)) next.admin.leaderboardReset = "never";
   if (next.admin.pin && String(next.admin.pin).trim().length < 4) {
     throw new Error("Admin PIN must be at least 4 characters.");
   }

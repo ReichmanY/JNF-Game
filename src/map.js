@@ -19,12 +19,12 @@ export function createIsraelMap(el, mapConfig) {
     maxZoom: mapConfig.maxZoom,
     maxBounds: bounds.pad(0.08),
     zoomControl: true,
-    attributionControl: true,
+    attributionControl: false,
   });
 
-  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}", {
     attribution: "Tiles &copy; Esri",
-    maxZoom: 16,
+    maxZoom: 13,
   }).addTo(map);
 
   let guessMarker = null;
@@ -102,7 +102,7 @@ export function createIsraelMap(el, mapConfig) {
             [guess.lat, guess.lng],
             [truth.lat, truth.lng],
           ],
-          { color: "#d4a017", weight: 3, dashArray: "8 8" }
+          { color: "#bb8100", weight: 3, dashArray: "8 8" }
         ).addTo(map);
         map.fitBounds(L.latLngBounds([guess.lat, guess.lng], [truth.lat, truth.lng]).pad(0.35), {
           maxZoom: 11,

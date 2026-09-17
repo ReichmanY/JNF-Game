@@ -6,22 +6,26 @@
     "orgShort": "JNF",
     "gameTitle": "Guess the Place",
     "tagline": "How well do you know the map of Israel?",
-    "learnMoreUrl": "https://www.jnf.org/our-work/community-building/green-horizons",
+    "learnMoreUrl": "https://sayarut.org.il",
     "learnMoreTitle": "About Green Horizons",
     "learnMoreBody": "Green Horizons (Chugei Siyarot) takes Israeli youth on educational hikes and camping trips that build leadership, social responsibility, and a lasting connection to the Land of Israel. Many alumni go on to serve in industry, government, and IDF command roles.",
     "boothCta": "Visit the Chugei Siyarot booth to learn more and register!",
     "privacyPolicyUrl": "https://www.jnf.org/privacy-policy"
   },
   "game": {
-    "questionsPerGame": 15,
+    "questionsPerGame": 10,
     "questionsPerDifficulty": {
-      "easy": 5,
-      "medium": 5,
-      "hard": 5
+      "easy": 4,
+      "medium": 3,
+      "hard": 3,
+      "total": 10
     },
     "timerSeconds": {
-      "easy": 30
+      "easy": 30,
+      "medium": 25,
+      "hard": 20
     },
+    "requireGuessConfirm": true,
     "maxDistanceScore": 4000,
     "perfectDistanceKm": 1,
     "zeroScoreDistanceKm": 180,
@@ -53,6 +57,7 @@
     ]
   },
   "admin": {
-    "pin": "horizons"
+    "pin": "horizons",
+    "leaderboardReset": "never"
   }
 }

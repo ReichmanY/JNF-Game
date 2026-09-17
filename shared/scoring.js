@@ -30,19 +30,41 @@ export function scoreGuess({ guess, target, elapsedMs, durationMs, game }) {
   };
 }
 
+export function splitDifficulties(total) {
+  const n = Math.max(1, Math.round(Number(total) || 10));
+  const easy = Math.ceil(n / 3);
+  const hard = Math.floor(n / 3);
+  const medium = n - easy - hard;
+  return { easy, medium, hard, total: n };
+}
+
 export function pickRound(questions, game, random = Math.random) {
-  const counts = game.questionsPerDifficulty;
+  const n = Math.max(1, Number(game.questionsPerGame) || 10);
+  const counts = splitDifficulties(n);
   const byDiff = { easy: [], medium: [], hard: [] };
   for (const q of questions) {
     if (byDiff[q.difficulty]) byDiff[q.difficulty].push(q);
   }
+  const used = new Set();
   const picked = [];
-  for (const [difficulty, count] of Object.entries(counts)) {
-    const pool = shuffle([...byDiff[difficulty]], random);
-    if (pool.length < count) {
-      throw new Error(`Not enough ${difficulty} questions in the bank`);
-    }
-    picked.push(...pool.slice(0, count));
+  for (const difficulty of ["easy", "medium", "hard"]) {
+    const pool = shuffle(
+      byDiff[difficulty].filter((q) => !used.has(q.id)),
+      random
+    );
+    const take = pool.slice(0, counts[difficulty]);
+    for (const q of take) used.add(q.id);
+    picked.push(...take);
+  }
+  if (picked.length < n) {
+    const rest = shuffle(
+      questions.filter((q) => !used.has(q.id)),
+      random
+    );
+    picked.push(...rest.slice(0, n - picked.length));
+  }
+  if (picked.length < n) {
+    throw new Error(`Need at least ${n} questions in the bank`);
   }
   return picked;
 }
@@ -61,5 +83,7 @@ export function sanitizeQuestion(question) {
 }
 
 export function timerFor(difficulty, game) {
-  return (game.timerSeconds[difficulty] ?? game.timerSeconds.medium) * 1000;
+  const timers = game.timerSeconds || {};
+  const seconds = timers[difficulty] ?? timers.medium ?? timers.easy ?? 30;
+  return seconds * 1000;
 }

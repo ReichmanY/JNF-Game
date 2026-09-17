@@ -1,5 +1,7 @@
 import "./styles.css";
 import { createIsraelMap } from "./map.js";
+import { brandBar } from "./brand.js";
+import { APP_VERSION_LABEL } from "../shared/version.js";
 
 const root = document.getElementById("app");
 const pinKey = "gh-admin-pin";
@@ -33,10 +35,12 @@ async function boot() {
 function renderLogin() {
   root.innerHTML = `
     <section class="screen sheet">
+      ${brandBar()}
       <div class="sheet-inner">
         <div class="eyebrow">${escapeHtml(state.config.brand.programName)}</div>
         <h1>Staff console</h1>
         <p class="muted">Enter questions and photos, change game settings, and export prize-winner contacts.</p>
+        <p class="version-tag version-tag-dark">${APP_VERSION_LABEL}</p>
         <form id="pin-form">
           <div class="field">
             <label for="pin">Admin PIN</label>
@@ -93,10 +97,11 @@ function render() {
   const counts = { easy: 0, medium: 0, hard: 0 };
   for (const q of state.questions) counts[q.difficulty] = (counts[q.difficulty] || 0) + 1;
   root.innerHTML = `
+    ${brandBar()}
     <div class="admin-shell">
       <div class="admin-head">
         <div>
-          <div class="eyebrow">${escapeHtml(state.config.brand.programName)} · staff only</div>
+          <div class="eyebrow">${escapeHtml(state.config.brand.programName)} · staff only · ${APP_VERSION_LABEL}</div>
           <h1>Game configuration</h1>
           <p class="muted">Add places and photos, set scoring and timers, then export the leaderboard.</p>
         </div>
@@ -225,15 +230,20 @@ function settingsPanel() {
   const g = state.config.game;
   const b = state.config.brand;
   const m = state.config.map;
+  const reset = state.config.admin.leaderboardReset || "never";
+  const split = g.questionsPerDifficulty || {};
   return `
     <form id="settings-form">
       <div class="panel">
         <h3>Round shape</h3>
         <div class="field-row">
-          ${numField("easyCount", "Easy questions per game", g.questionsPerDifficulty.easy)}
-          ${numField("mediumCount", "Medium questions per game", g.questionsPerDifficulty.medium)}
-          ${numField("hardCount", "Hard questions per game", g.questionsPerDifficulty.hard)}
+          ${numField("questionsPerGame", "Questions per game", g.questionsPerGame || 10)}
         </div>
+        <p class="tiny muted">Difficulty mix is automatic (about one third each). A ${g.questionsPerGame || 10}-question game currently uses ${split.easy || 0} easy, ${split.medium || 0} medium, ${split.hard || 0} hard.</p>
+        <label class="check">
+          <input type="checkbox" name="requireGuessConfirm" ${g.requireGuessConfirm ? "checked" : ""} />
+          <span>Require players to confirm a map pin. If off, the first tap on the map is scored immediately</span>
+        </label>
         <div class="field-row">
           ${numField("easyTimer", "Easy timer (seconds)", g.timerSeconds.easy)}
           ${numField("mediumTimer", "Medium timer (seconds)", g.timerSeconds.medium)}
@@ -280,6 +290,19 @@ function settingsPanel() {
         </div>
         <div class="field"><label for="adminPin">Admin PIN</label><input id="adminPin" name="adminPin" value="${escapeAttr(state.config.admin.pin)}" /></div>
       </div>
+      <div class="panel">
+        <h3>Players database</h3>
+        <p class="muted">Clear registered names, contacts, and scores. Automatic clearing runs when someone next plays or opens the leaderboard.</p>
+        <div class="field">
+          <label for="leaderboardReset">Automatically clear users</label>
+          <select id="leaderboardReset" name="leaderboardReset">
+            <option value="never" ${reset === "never" ? "selected" : ""}>Never</option>
+            <option value="daily" ${reset === "daily" ? "selected" : ""}>Every day</option>
+            <option value="monthly" ${reset === "monthly" ? "selected" : ""}>Every month</option>
+          </select>
+        </div>
+        <button class="btn btn-danger" type="button" id="clear-players">Clear users database</button>
+      </div>
       <div class="action-row" style="max-width:420px">
         <button class="btn btn-primary" type="submit">Save settings</button>
       </div>
@@ -309,7 +332,10 @@ function playersPanel() {
     <div class="panel">
       <h3>Registered players</h3>
       <p class="muted">Emails and phone numbers stay off the public leaderboard. Export this list to contact prize winners.</p>
-      <button class="btn btn-primary" id="export">Export CSV</button>
+      <div class="action-row" style="max-width:420px">
+        <button class="btn btn-primary" id="export" type="button">Export CSV</button>
+        <button class="btn btn-danger" id="clear-players" type="button">Clear users database</button>
+      </div>
       <div class="table-wrap" style="max-height:none;margin-top:1rem">
         <table>
           <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>High score</th><th>Plays</th></tr></thead>
@@ -488,6 +514,7 @@ async function saveQuestion(data) {
 }
 
 function bindSettings() {
+  bindClearPlayers();
   root.querySelector("#settings-form")?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
@@ -503,11 +530,8 @@ function bindSettings() {
         privacyPolicyUrl: String(data.get("privacyPolicyUrl") || ""),
       },
       game: {
-        questionsPerDifficulty: {
-          easy: num("easyCount"),
-          medium: num("mediumCount"),
-          hard: num("hardCount"),
-        },
+        questionsPerGame: num("questionsPerGame"),
+        requireGuessConfirm: data.get("requireGuessConfirm") === "on",
         timerSeconds: {
           easy: num("easyTimer"),
           medium: num("mediumTimer"),
@@ -529,7 +553,10 @@ function bindSettings() {
         minZoom: num("minZoom"),
         maxZoom: num("maxZoom"),
       },
-      admin: { pin: String(data.get("adminPin") || "") },
+      admin: {
+        pin: String(data.get("adminPin") || ""),
+        leaderboardReset: String(data.get("leaderboardReset") || "never"),
+      },
     };
     try {
       const result = await api("/api/admin/config", { method: "PUT", body: JSON.stringify(patch) });
@@ -547,8 +574,23 @@ function bindSettings() {
 }
 
 function bindPlayers() {
+  bindClearPlayers();
   root.querySelector("#export")?.addEventListener("click", () => {
     location.href = `/api/admin/export?pin=${encodeURIComponent(state.pin)}`;
+  });
+}
+
+function bindClearPlayers() {
+  root.querySelector("#clear-players")?.addEventListener("click", async () => {
+    if (!confirm("Clear all registered players and scores? This cannot be undone.")) return;
+    try {
+      const data = await api("/api/admin/players/clear", { method: "POST" });
+      state.players = { players: data.players || [], stats: data.stats };
+      flash("Users database cleared.");
+    } catch (error) {
+      state.error = error.message;
+      render();
+    }
   });
 }
 

@@ -5,12 +5,14 @@ import { appRoot } from "./paths.js";
 const root = appRoot();
 const file = join(root, "data", "store.json");
 
-const empty = { players: [] };
+const empty = { players: [], lastResetAt: null };
 
 export async function readStore() {
   try {
     const raw = await readFile(file, "utf8");
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data.players)) data.players = [];
+    return data;
   } catch {
     return { ...empty, players: [] };
   }
@@ -21,6 +23,34 @@ export async function writeStore(data) {
   await writeFile(file, JSON.stringify(data, null, 2));
 }
 
+export async function maybeResetLeaderboard(policy = "never") {
+  const data = await readStore();
+  if (policy === "never" || !policy) return data;
+  const now = new Date();
+  const last = data.lastResetAt ? new Date(data.lastResetAt) : null;
+  if (!last) {
+    data.lastResetAt = now.toISOString();
+    await writeStore(data);
+    return data;
+  }
+  const due =
+    (policy === "daily" && last.toDateString() !== now.toDateString()) ||
+    (policy === "monthly" &&
+      (last.getUTCFullYear() !== now.getUTCFullYear() || last.getUTCMonth() !== now.getUTCMonth()));
+  if (!due) return data;
+  data.players = [];
+  data.lastResetAt = now.toISOString();
+  await writeStore(data);
+  return data;
+}
+
+export async function clearPlayers() {
+  const data = await readStore();
+  data.players = [];
+  data.lastResetAt = new Date().toISOString();
+  await writeStore(data);
+  return data;
+}
 export function identityKey(player) {
   if (player.email) return `email:${player.email.trim().toLowerCase()}`;
   if (player.phone) return `phone:${String(player.phone).replace(/\D/g, "")}`;

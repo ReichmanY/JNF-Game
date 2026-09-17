@@ -18,8 +18,12 @@ internal static class Program
             return 1;
         }
 
-        Console.Title = "Green Horizons — Guess the Place";
-        Console.WriteLine("Starting Green Horizons...");
+        var versionFile = Path.Combine(root, "VERSION.txt");
+        var version = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "1.0.1";
+        if (string.IsNullOrEmpty(version)) version = "1.0.1";
+
+        Console.Title = "Green Horizons v" + version + " — Guess the Place";
+        Console.WriteLine("Starting Green Horizons " + version + "...");
         Console.WriteLine("The game and admin pages will open in your browser.");
         Console.WriteLine("Close this window or press Ctrl+C to stop.");
         Console.WriteLine();

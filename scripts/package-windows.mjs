@@ -1,11 +1,13 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = join(root, "release", "GreenHorizons");
+const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+const version = pkg.version;
 const csc =
   process.env.WINDIR &&
   join(process.env.WINDIR, "Microsoft.NET", "Framework64", "v4.0.30319", "csc.exe");
@@ -58,9 +60,11 @@ run(csc, [
   join(root, "scripts", "launcher.cs"),
 ]);
 
+writeFileSync(join(out, "VERSION.txt"), `${version}\n`);
 writeFileSync(
   join(out, "HOW-TO-RUN.txt"),
-  `Green Horizons — Guess the Place
+  `Green Horizons - Guess the Place
+Version ${version}
 Windows standalone package
 
 START
@@ -83,5 +87,5 @@ No install is required.
 `
 );
 
-console.log(`\nPackage ready: ${out}`);
+console.log(`\nPackage ready: ${out} (${version})`);
 console.log("Double-click GreenHorizons.exe to start.");
