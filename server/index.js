@@ -2,7 +2,7 @@ import { exec } from "node:child_process";
 import { createServer } from "node:http";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
-import { appRoot } from "./paths.js";
+import { appRoot, publicBasePath } from "./paths.js";
 import express from "express";
 import cors from "cors";
 import { pickRound, scoreGuess, sanitizeQuestion, timerFor } from "../shared/scoring.js";
@@ -20,6 +20,7 @@ import {
 } from "./content.js";
 
 const root = appRoot();
+const basePath = publicBasePath();
 const isDev = process.argv.includes("--dev");
 const isDesktop = process.argv.includes("--desktop");
 const PORT = Number(process.env.PORT || (isDev ? 3001 : 3000));
@@ -28,18 +29,21 @@ const sessions = new Map();
 const hits = new Map();
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json({ limit: "12mb" }));
+
+const routes = express.Router();
 
 async function withStore() {
   return maybeResetLeaderboard(getConfig().admin?.leaderboardReset || "never");
 }
 
-app.get("/api/health", (_req, res) => {
+routes.get("/api/health", (_req, res) => {
   res.json({ ok: true, service: "green-horizons", version: APP_VERSION });
 });
 
-app.post("/api/session", (req, res) => {
+routes.post("/api/session", (req, res) => {
   if (tooMany(req, "session", 12, 10 * 60 * 1000)) {
     return res.status(429).json({ error: "Please wait before starting another game." });
   }
@@ -64,7 +68,7 @@ app.post("/api/session", (req, res) => {
   }
 });
 
-app.post("/api/next", (req, res) => {
+routes.post("/api/next", (req, res) => {
   const session = sessions.get(req.body?.sessionId);
   if (!session || session.status !== "active") {
     return res.status(404).json({ error: "Session not found." });
@@ -86,7 +90,7 @@ app.post("/api/next", (req, res) => {
   });
 });
 
-app.post("/api/guess", (req, res) => {
+routes.post("/api/guess", (req, res) => {
   if (tooMany(req, "guess", 40, 10 * 60 * 1000)) {
     return res.status(429).json({ error: "Too many guesses. Please slow down." });
   }
@@ -125,7 +129,7 @@ app.post("/api/guess", (req, res) => {
   res.json(recorded);
 });
 
-app.post("/api/complete", async (req, res) => {
+routes.post("/api/complete", async (req, res) => {
   const session = sessions.get(req.body?.sessionId);
   if (!session) return res.status(404).json({ error: "Session not found." });
   if (session.guesses.length < session.questionIds.length) {
@@ -152,7 +156,7 @@ app.post("/api/complete", async (req, res) => {
   });
 });
 
-app.post("/api/join", async (req, res) => {
+routes.post("/api/join", async (req, res) => {
   const player = normalizePlayer({ ...req.body?.player, mode: "registered", consent: true });
   const totalScore = Number(req.body?.totalScore);
   if (!player || !Number.isFinite(totalScore)) {
@@ -171,7 +175,7 @@ app.post("/api/join", async (req, res) => {
   });
 });
 
-app.get("/api/leaderboard", async (req, res) => {
+routes.get("/api/leaderboard", async (req, res) => {
   const limit = Number(req.query.limit) || getConfig().game.leaderboardTop;
   const store = await withStore();
   const sorted = [...store.players].sort((a, b) => b.highScore - a.highScore);
@@ -181,7 +185,7 @@ app.get("/api/leaderboard", async (req, res) => {
   });
 });
 
-app.get("/api/admin/players", async (req, res) => {
+routes.get("/api/admin/players", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   const store = await withStore();
   const players = [...store.players].sort((a, b) => b.highScore - a.highScore);
@@ -195,7 +199,7 @@ app.get("/api/admin/players", async (req, res) => {
   });
 });
 
-app.get("/api/admin/export", async (req, res) => {
+routes.get("/api/admin/export", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   const store = await withStore();
   const players = [...store.players].sort((a, b) => b.highScore - a.highScore);
@@ -204,7 +208,7 @@ app.get("/api/admin/export", async (req, res) => {
   res.send(toCsv(players));
 });
 
-app.delete("/api/admin/players", async (req, res) => {
+routes.delete("/api/admin/players", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   const store = await clearPlayers();
   res.json({
@@ -214,7 +218,7 @@ app.delete("/api/admin/players", async (req, res) => {
   });
 });
 
-app.post("/api/admin/players/clear", async (req, res) => {
+routes.post("/api/admin/players/clear", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   const store = await clearPlayers();
   res.json({
@@ -224,12 +228,12 @@ app.post("/api/admin/players/clear", async (req, res) => {
   });
 });
 
-app.get("/api/admin/content", (req, res) => {
+routes.get("/api/admin/content", (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   res.json({ config: getConfig(), questions: getQuestions() });
 });
 
-app.put("/api/admin/config", async (req, res) => {
+routes.put("/api/admin/config", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   try {
     const next = mergeConfig(getConfig(), req.body || {});
@@ -240,7 +244,7 @@ app.put("/api/admin/config", async (req, res) => {
   }
 });
 
-app.put("/api/admin/questions", async (req, res) => {
+routes.put("/api/admin/questions", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   try {
     const incoming = Array.isArray(req.body?.questions) ? req.body.questions : req.body;
@@ -258,7 +262,7 @@ app.put("/api/admin/questions", async (req, res) => {
   }
 });
 
-app.post("/api/admin/questions", async (req, res) => {
+routes.post("/api/admin/questions", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   try {
     const current = getQuestions();
@@ -271,7 +275,7 @@ app.post("/api/admin/questions", async (req, res) => {
   }
 });
 
-app.put("/api/admin/questions/:id", async (req, res) => {
+routes.put("/api/admin/questions/:id", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   try {
     const current = getQuestions();
@@ -288,13 +292,13 @@ app.put("/api/admin/questions/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/admin/questions/:id", async (req, res) => {
+routes.delete("/api/admin/questions/:id", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   const saved = await saveQuestions(getQuestions().filter((q) => q.id !== req.params.id));
   res.json({ questions: saved });
 });
 
-app.post("/api/admin/upload", async (req, res) => {
+routes.post("/api/admin/upload", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   try {
     const url = await saveUpload(req.body?.filename || "photo", req.body?.dataUrl);
@@ -306,15 +310,17 @@ app.post("/api/admin/upload", async (req, res) => {
 
 if (!isDev) {
   const dist = join(root, "dist");
-  app.use(express.static(dist));
-  app.use(express.static(join(root, "public")));
-  app.get(/^(?!\/api).*/, async (req, res) => {
+  routes.use(express.static(dist));
+  routes.use(express.static(join(root, "public")));
+  routes.get(/^(?!\/api).*/, async (req, res) => {
     const file = req.path.startsWith("/admin") ? "admin.html" : "index.html";
     res.sendFile(join(dist, file), (err) => {
       if (err) res.sendFile(join(root, file));
     });
   });
 }
+
+app.use(basePath || "/", routes);
 
 const server = createServer(app);
 server.on("error", (err) => {
@@ -326,8 +332,9 @@ server.on("error", (err) => {
   process.exit(1);
 });
 server.listen(PORT, () => {
-  const gameUrl = `http://127.0.0.1:${PORT}/`;
-  const adminUrl = `http://127.0.0.1:${PORT}/admin.html`;
+  const prefix = basePath || "";
+  const gameUrl = `http://127.0.0.1:${PORT}${prefix}/`;
+  const adminUrl = `http://127.0.0.1:${PORT}${prefix}/admin.html`;
   console.log(`Green Horizons ${APP_VERSION_LABEL} ${isDev ? "API" : "server"} listening on ${gameUrl}`);
   if (isDesktop) {
     console.log(`Version ${APP_VERSION}`);

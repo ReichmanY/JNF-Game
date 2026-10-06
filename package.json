@@ -11,7 +11,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server/index.js",
-    "package:win": "node scripts/package-windows.mjs"
+    "package:win": "node scripts/package-windows.mjs",
+    "package:site": "node scripts/package-site.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

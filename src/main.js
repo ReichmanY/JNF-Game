@@ -1,12 +1,13 @@
 import "./styles.css";
 import { createApp } from "./app.js";
+import { withBase } from "./base.js";
 
 async function boot() {
   const root = document.getElementById("app");
   try {
     const [configRes, questionsRes] = await Promise.all([
-      fetch("/config.json"),
-      fetch("/questions.json"),
+      fetch(withBase("/config.json")),
+      fetch(withBase("/questions.json")),
     ]);
     if (!configRes.ok || !questionsRes.ok) throw new Error("Missing game data files");
     const config = await configRes.json();

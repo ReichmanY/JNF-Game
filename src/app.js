@@ -1,3 +1,4 @@
+import { withBase } from "./base.js";
 import { createIsraelMap } from "./map.js";
 import { createApi } from "./api.js";
 import { brandBar } from "./brand.js";
@@ -166,7 +167,7 @@ export function createApp(root, { config, questions }) {
   function clueHTML() {
     const q = state.current;
     const image = q.image_url
-      ? `<img src="${escapeAttr(q.image_url)}" alt="" data-q-image />`
+      ? `<img src="${escapeAttr(withBase(q.image_url))}" alt="" data-q-image />`
       : `<div class="ph">${q.name.slice(0, 1)}</div>`;
     return `
       <div class="clue">

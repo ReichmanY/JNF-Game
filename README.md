@@ -59,14 +59,29 @@ If the API is running, scores are stored in `data/store.json` and checked on the
 
 ## Embed
 
+This game needs its Node API so scores are stored on the website server (`data/store.json`), not in WordPress and not only in the visitor's browser.
+
+Build a WordPress/site folder + zip:
+
+```bash
+npm run package:site
+```
+
+That produces `release/GreenHorizons-site/` and `release/GreenHorizons-vVERSION-wordpress.zip`, compiled for `https://YOUR-SITE/game/`. See `SITE-INSTALL.txt` in the zip.
+
+WordPress page (Custom HTML block):
+
 ```html
 <iframe
-  src="https://your-host.example/"
+  src="https://YOUR-SITE/game/"
   title="Green Horizons Guess the Place"
-  style="width:100%;height:100vh;border:0"
+  style="width:100%;min-height:100vh;height:100vh;border:0;display:block"
   allow="fullscreen"
+  loading="lazy"
 ></iframe>
 ```
+
+Source: https://github.com/ReichmanY/JNF-Game — clone and build with `VITE_BASE=/game/` and `BASE_PATH=/game`.
 
 ## Scope notes
 

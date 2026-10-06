@@ -1,3 +1,5 @@
+import { withBase } from "./base.js";
+
 const STORAGE_KEY = "gh-leaderboard-v1";
 
 function loadLocal() {
@@ -24,7 +26,7 @@ export function createApi() {
   async function detect() {
     if (remote !== null) return remote;
     try {
-      const res = await fetch("/api/health", { cache: "no-store" });
+      const res = await fetch(withBase("/api/health"), { cache: "no-store" });
       remote = res.ok;
     } catch {
       remote = false;
@@ -34,7 +36,7 @@ export function createApi() {
 
   async function startSession(player, questions, game) {
     if (await detect()) {
-      const res = await fetch("/api/session", {
+      const res = await fetch(withBase("/api/session"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(player),
@@ -49,7 +51,7 @@ export function createApi() {
 
   async function nextQuestion(sessionId) {
     if (await detect()) {
-      const res = await fetch("/api/next", {
+      const res = await fetch(withBase("/api/next"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),
@@ -62,7 +64,7 @@ export function createApi() {
 
   async function submitGuess(sessionId, payload) {
     if (await detect()) {
-      const res = await fetch("/api/guess", {
+      const res = await fetch(withBase("/api/guess"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, ...payload }),
@@ -75,7 +77,7 @@ export function createApi() {
 
   async function complete(sessionId, fallback) {
     if (await detect()) {
-      const res = await fetch("/api/complete", {
+      const res = await fetch(withBase("/api/complete"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),
@@ -136,7 +138,7 @@ export function createApi() {
 
   async function leaderboard(limit = 10) {
     if (await detect()) {
-      const res = await fetch(`/api/leaderboard?limit=${limit}`);
+      const res = await fetch(withBase(`/api/leaderboard?limit=${limit}`));
       if (!res.ok) throw new Error("Could not load the leaderboard");
       return res.json();
     }
@@ -153,7 +155,7 @@ export function createApi() {
 
   async function joinLeaderboard(player, totalScore, breakdown) {
     if (await detect()) {
-      const res = await fetch("/api/join", {
+      const res = await fetch(withBase("/api/join"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ player, totalScore, breakdown }),

@@ -1,4 +1,5 @@
 import "./styles.css";
+import { withBase } from "./base.js";
 import { createIsraelMap } from "./map.js";
 import { brandBar } from "./brand.js";
 import { APP_VERSION_LABEL } from "../shared/version.js";
@@ -22,7 +23,7 @@ const state = {
 };
 
 async function boot() {
-  const fallback = await (await fetch("/config.json")).json();
+  const fallback = await (await fetch(withBase("/config.json"))).json();
   state.config = fallback;
   const saved = sessionStorage.getItem(pinKey);
   if (saved) {
@@ -84,11 +85,11 @@ function eyeOffIcon() {
 
 async function openConsole(pin) {
   try {
-    state.remote = await fetch("/api/health").then((r) => r.ok).catch(() => false);
+    state.remote = await fetch(withBase("/api/health")).then((r) => r.ok).catch(() => false);
     if (!state.remote) throw new Error("Start the game server (npm run dev) to edit questions and settings.");
     const [contentRes, playersRes] = await Promise.all([
-      fetch(`/api/admin/content?pin=${encodeURIComponent(pin)}`),
-      fetch(`/api/admin/players?pin=${encodeURIComponent(pin)}`),
+      fetch(withBase(`/api/admin/content?pin=${encodeURIComponent(pin)}`)),
+      fetch(withBase(`/api/admin/players?pin=${encodeURIComponent(pin)}`)),
     ]);
     if (!contentRes.ok || !playersRes.ok) throw new Error("That PIN was not accepted.");
     const content = await contentRes.json();
@@ -110,7 +111,7 @@ function headers() {
 }
 
 async function api(path, options = {}) {
-  const res = await fetch(path, { ...options, headers: { ...headers(), ...options.headers } });
+  const res = await fetch(withBase(path), { ...options, headers: { ...headers(), ...options.headers } });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Request failed.");
   return data;
@@ -132,7 +133,7 @@ function render() {
           <h1>Game configuration</h1>
           <p class="muted">Add places and photos, set scoring and timers, then export the leaderboard.</p>
         </div>
-        <a class="btn btn-ghost" href="/">Back to game</a>
+        <a class="btn btn-ghost" href="${withBase("/")}">Back to game</a>
       </div>
       ${state.message ? `<p class="admin-banner">${escapeHtml(state.message)}</p>` : ""}
       ${state.error ? `<p class="admin-banner error">${escapeHtml(state.error)}</p>` : ""}
@@ -171,7 +172,7 @@ function questionsPanel() {
       <article class="q-card">
         ${
           q.image_url
-            ? `<img src="${escapeAttr(q.image_url)}" alt="" />`
+            ? `<img src="${escapeAttr(withBase(q.image_url))}" alt="" />`
             : `<div class="ph">${escapeHtml(q.name.slice(0, 1))}</div>`
         }
         <div>
@@ -238,7 +239,7 @@ function editorPanel() {
             <input id="q-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
             <p class="tiny muted">JPG, PNG, WebP, or GIF · 5 MB max</p>
           </div>
-          <div class="photo-preview" id="photo-preview">${q.image_url ? `<img src="${escapeAttr(q.image_url)}" alt="Preview" />` : `<span class="muted tiny">No photo yet</span>`}</div>
+          <div class="photo-preview" id="photo-preview">${q.image_url ? `<img src="${escapeAttr(withBase(q.image_url))}" alt="Preview" />` : `<span class="muted tiny">No photo yet</span>`}</div>
         </div>
         <div>
           <label>Correct location — click the English map</label>
@@ -508,7 +509,7 @@ async function uploadPhoto(event) {
 function previewPhoto(url) {
   const box = root.querySelector("#photo-preview");
   if (!box) return;
-  box.innerHTML = url ? `<img src="${escapeAttr(url)}" alt="Preview" />` : `<span class="muted tiny">No photo yet</span>`;
+  box.innerHTML = url ? `<img src="${escapeAttr(withBase(url))}" alt="Preview" />` : `<span class="muted tiny">No photo yet</span>`;
 }
 
 function readFile(file) {
@@ -616,7 +617,7 @@ function bindSettings() {
 function bindPlayers() {
   bindClearPlayers();
   root.querySelector("#export")?.addEventListener("click", () => {
-    location.href = `/api/admin/export?pin=${encodeURIComponent(state.pin)}`;
+    location.href = withBase(`/api/admin/export?pin=${encodeURIComponent(state.pin)}`);
   });
 }
 

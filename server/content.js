@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { appRoot } from "./paths.js";
+import { appRoot, publicBasePath } from "./paths.js";
 import { FAMILY_IDS } from "../shared/families.js";
 
 const root = appRoot();
@@ -104,7 +104,7 @@ export async function saveUpload(filename, dataUrl) {
   const safe = slugify(filename.replace(/\.[^.]+$/, "")) || "photo";
   const stored = `${safe}-${Date.now().toString(36)}.${ext}`;
   await writeFile(join(uploadsDir, stored), raw);
-  return `/uploads/${stored}`;
+  return `${publicBasePath()}/uploads/${stored}`;
 }
 
 export { root };

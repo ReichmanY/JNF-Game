@@ -11,3 +11,11 @@ export function appRoot() {
   if (existsSync(join(here, "public", "config.json"))) return here;
   return join(here, "..");
 }
+
+/** Public URL prefix. Empty for site root, "/game" for https://example.org/game/. */
+export function publicBasePath() {
+  const raw = String(process.env.BASE_PATH || "").trim();
+  if (!raw || raw === "/") return "";
+  const withSlash = raw.startsWith("/") ? raw : `/${raw}`;
+  return withSlash.replace(/\/+$/, "");
+}
