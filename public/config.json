@@ -14,18 +14,22 @@
   },
   "game": {
     "questionsPerGame": 10,
+    "familyMix": {
+      "settlements": 50,
+      "jnf-sites": 10,
+      "general-sites": 40
+    },
     "questionsPerDifficulty": {
       "easy": 4,
       "medium": 3,
-      "hard": 3,
-      "total": 10
+      "hard": 3
     },
     "timerSeconds": {
       "easy": 30,
       "medium": 25,
       "hard": 20
     },
-    "requireGuessConfirm": true,
+    "requireGuessConfirm": false,
     "maxDistanceScore": 4000,
     "perfectDistanceKm": 1,
     "zeroScoreDistanceKm": 180,
@@ -47,12 +51,12 @@
     "maxZoom": 13,
     "maxBounds": [
       [
-        29.25,
-        34.1
+        28.2,
+        32.2
       ],
       [
-        33.55,
-        36.05
+        34.4,
+        37.4
       ]
     ]
   },

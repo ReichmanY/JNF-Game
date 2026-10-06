@@ -1,4 +1,5 @@
 import { distanceKm } from "./geo.js";
+import { DEFAULT_FAMILY_MIX, FAMILY_IDS, splitFamilyCounts } from "./families.js";
 
 export function distanceScore(km, game) {
   const max = game.maxDistanceScore;
@@ -40,19 +41,20 @@ export function splitDifficulties(total) {
 
 export function pickRound(questions, game, random = Math.random) {
   const n = Math.max(1, Number(game.questionsPerGame) || 10);
-  const counts = splitDifficulties(n);
-  const byDiff = { easy: [], medium: [], hard: [] };
+  const counts = splitFamilyCounts(n, game.familyMix || DEFAULT_FAMILY_MIX);
+  const byFamily = Object.fromEntries(FAMILY_IDS.map((id) => [id, []]));
   for (const q of questions) {
-    if (byDiff[q.difficulty]) byDiff[q.difficulty].push(q);
+    const family = FAMILY_IDS.includes(q.category) ? q.category : "general-sites";
+    byFamily[family].push(q);
   }
   const used = new Set();
   const picked = [];
-  for (const difficulty of ["easy", "medium", "hard"]) {
+  for (const family of FAMILY_IDS) {
     const pool = shuffle(
-      byDiff[difficulty].filter((q) => !used.has(q.id)),
+      byFamily[family].filter((q) => !used.has(q.id)),
       random
     );
-    const take = pool.slice(0, counts[difficulty]);
+    const take = pool.slice(0, counts[family] || 0);
     for (const q of take) used.add(q.id);
     picked.push(...take);
   }
@@ -66,7 +68,7 @@ export function pickRound(questions, game, random = Math.random) {
   if (picked.length < n) {
     throw new Error(`Need at least ${n} questions in the bank`);
   }
-  return picked;
+  return shuffle(picked, random);
 }
 
 function shuffle(list, random) {

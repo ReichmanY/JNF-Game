@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { appRoot } from "./paths.js";
+import { FAMILY_IDS } from "../shared/families.js";
 
 const root = appRoot();
 const configPath = join(root, "public", "config.json");
@@ -71,6 +72,7 @@ export function normalizeQuestion(input, existingIds, previousId = "") {
   }
   const others = new Set(existingIds);
   if (previousId) others.delete(previousId);
+  const category = FAMILY_IDS.includes(input.category) ? input.category : "general-sites";
   return {
     id: uniqueId(name, others, previousId || input.id),
     name,
@@ -79,7 +81,7 @@ export function normalizeQuestion(input, existingIds, previousId = "") {
     latitude,
     longitude,
     difficulty,
-    category: String(input.category || "").trim(),
+    category,
   };
 }
 

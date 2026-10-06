@@ -2,10 +2,10 @@ import "./styles.css";
 import { createIsraelMap } from "./map.js";
 import { brandBar } from "./brand.js";
 import { APP_VERSION_LABEL } from "../shared/version.js";
+import { FAMILIES, familyLabel, splitFamilyCounts, DEFAULT_FAMILY_MIX } from "../shared/families.js";
 
 const root = document.getElementById("app");
 const pinKey = "gh-admin-pin";
-const CATEGORIES = ["", "jnf-forest", "lookout", "trail", "heritage", "city", "nature-reserve"];
 
 const state = {
   pin: "",
@@ -44,7 +44,12 @@ function renderLogin() {
         <form id="pin-form">
           <div class="field">
             <label for="pin">Admin PIN</label>
-            <input id="pin" name="pin" type="password" autocomplete="current-password" />
+            <div class="password-wrap">
+              <input id="pin" name="pin" type="password" autocomplete="current-password" />
+              <button class="password-toggle" type="button" id="toggle-pin" aria-label="Show PIN" aria-pressed="false" title="Show PIN">
+                ${eyeIcon()}
+              </button>
+            </div>
           </div>
           ${state.error ? `<p class="error">${escapeHtml(state.error)}</p>` : ""}
           <button class="btn btn-primary btn-wide" type="submit">Open console</button>
@@ -56,6 +61,25 @@ function renderLogin() {
     event.preventDefault();
     await openConsole(String(new FormData(event.target).get("pin") || ""));
   });
+  root.querySelector("#toggle-pin")?.addEventListener("click", () => {
+    const input = root.querySelector("#pin");
+    const btn = root.querySelector("#toggle-pin");
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.innerHTML = show ? eyeOffIcon() : eyeIcon();
+    btn.setAttribute("aria-pressed", String(show));
+    btn.setAttribute("aria-label", show ? "Hide PIN" : "Show PIN");
+    btn.title = show ? "Hide PIN" : "Show PIN";
+    input.focus();
+  });
+}
+
+function eyeIcon() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+}
+
+function eyeOffIcon() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.3 21.3 0 0 1 5.06-6.94"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.16 21.16 0 0 1-4.23 5.59"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 }
 
 async function openConsole(pin) {
@@ -94,8 +118,11 @@ async function api(path, options = {}) {
 
 function render() {
   destroyPicker();
-  const counts = { easy: 0, medium: 0, hard: 0 };
-  for (const q of state.questions) counts[q.difficulty] = (counts[q.difficulty] || 0) + 1;
+  const counts = { settlements: 0, "jnf-sites": 0, "general-sites": 0, easy: 0, medium: 0, hard: 0 };
+  for (const q of state.questions) {
+    counts[q.difficulty] = (counts[q.difficulty] || 0) + 1;
+    if (counts[q.category] !== undefined) counts[q.category] += 1;
+  }
   root.innerHTML = `
     ${brandBar()}
     <div class="admin-shell">
@@ -115,6 +142,7 @@ function render() {
         ${tabBtn("players", "Players")}
       </div>
       <div class="admin-stats">
+        <div class="admin-stat"><span class="tiny muted">Settlements / JNF / General</span><strong>${counts.settlements} / ${counts["jnf-sites"]} / ${counts["general-sites"]}</strong></div>
         <div class="admin-stat"><span class="tiny muted">Easy / medium / hard</span><strong>${counts.easy} / ${counts.medium} / ${counts.hard}</strong></div>
         <div class="admin-stat"><span class="tiny muted">Registered players</span><strong>${state.players.stats.players}</strong></div>
         <div class="admin-stat"><span class="tiny muted">Games played</span><strong>${state.players.stats.plays}</strong></div>
@@ -136,7 +164,7 @@ function tabBtn(id, label) {
 }
 
 function questionsPanel() {
-  const list = state.questions.filter((q) => state.filter === "all" || q.difficulty === state.filter);
+  const list = state.questions.filter((q) => state.filter === "all" || q.category === state.filter || q.difficulty === state.filter);
   const cards = list
     .map(
       (q) => `
@@ -149,8 +177,8 @@ function questionsPanel() {
         <div>
           <strong>${escapeHtml(q.name)}</strong>
           <p class="tiny muted">${escapeHtml(q.hint)}</p>
-          <span class="diff">${q.difficulty}</span>
-          ${q.category ? `<span class="tiny muted"> · ${escapeHtml(q.category)}</span>` : ""}
+          <span class="diff">${escapeHtml(familyLabel(q.category))}</span>
+          <span class="tiny muted"> · ${escapeHtml(q.difficulty)}</span>
         </div>
         <div class="q-actions">
           <button class="btn btn-ghost" data-edit="${escapeAttr(q.id)}">Edit</button>
@@ -165,7 +193,7 @@ function questionsPanel() {
       <p class="muted">Use <strong>Add place</strong> below. Type the English name and hint, choose easy / medium / hard, then click the map (or type coordinates) for the correct location. Add a photo by pasting an image URL or uploading a file from this computer — the photo is stored with the game and shown on that question.</p>
       <div class="admin-toolbar">
         <div class="tabs filter-tabs">
-          ${["all", "easy", "medium", "hard"].map((f) => `<button class="tab ${state.filter === f ? "active" : ""}" data-filter="${f}">${f}</button>`).join("")}
+          ${["all", ...FAMILIES.map((f) => f.id)].map((f) => `<button class="tab ${state.filter === f ? "active" : ""}" data-filter="${f}">${f === "all" ? "all" : familyLabel(f)}</button>`).join("")}
         </div>
         <button class="btn btn-primary" id="add-place">Add place</button>
       </div>
@@ -191,9 +219,9 @@ function editorPanel() {
                 ${["easy", "medium", "hard"].map((d) => `<option value="${d}" ${q.difficulty === d ? "selected" : ""}>${d}</option>`).join("")}
               </select>
             </div>
-            <div class="field"><label for="q-cat">Category</label>
+            <div class="field"><label for="q-cat">Family</label>
               <select id="q-cat" name="category">
-                ${CATEGORIES.map((c) => `<option value="${c}" ${q.category === c ? "selected" : ""}>${c || "—"}</option>`).join("")}
+                ${FAMILIES.map((c) => `<option value="${c.id}" ${q.category === c.id ? "selected" : ""}>${c.label}</option>`).join("")}
               </select>
             </div>
           </div>
@@ -231,7 +259,8 @@ function settingsPanel() {
   const b = state.config.brand;
   const m = state.config.map;
   const reset = state.config.admin.leaderboardReset || "never";
-  const split = g.questionsPerDifficulty || {};
+  const mix = { ...DEFAULT_FAMILY_MIX, ...(g.familyMix || {}) };
+  const split = splitFamilyCounts(g.questionsPerGame || 10, mix);
   return `
     <form id="settings-form">
       <div class="panel">
@@ -239,7 +268,13 @@ function settingsPanel() {
         <div class="field-row">
           ${numField("questionsPerGame", "Questions per game", g.questionsPerGame || 10)}
         </div>
-        <p class="tiny muted">Difficulty mix is automatic (about one third each). A ${g.questionsPerGame || 10}-question game currently uses ${split.easy || 0} easy, ${split.medium || 0} medium, ${split.hard || 0} hard.</p>
+        <p class="tiny muted">Each round is shuffled. Default mix is 50% settlements, 10% JNF sites, 40% general sites.</p>
+        <div class="field-row">
+          ${numField("mixSettlements", "Settlements %", mix.settlements)}
+          ${numField("mixJnfSites", "JNF Sites %", mix["jnf-sites"])}
+          ${numField("mixGeneralSites", "General Sites %", mix["general-sites"])}
+        </div>
+        <p class="tiny muted">A ${g.questionsPerGame || 10}-question game currently uses ${split.settlements} settlements, ${split["jnf-sites"]} JNF sites, ${split["general-sites"]} general sites.</p>
         <label class="check">
           <input type="checkbox" name="requireGuessConfirm" ${g.requireGuessConfirm ? "checked" : ""} />
           <span>Require players to confirm a map pin. If off, the first tap on the map is scored immediately</span>
@@ -531,6 +566,11 @@ function bindSettings() {
       },
       game: {
         questionsPerGame: num("questionsPerGame"),
+        familyMix: {
+          settlements: num("mixSettlements"),
+          "jnf-sites": num("mixJnfSites"),
+          "general-sites": num("mixGeneralSites"),
+        },
         requireGuessConfirm: data.get("requireGuessConfirm") === "on",
         timerSeconds: {
           easy: num("easyTimer"),
@@ -603,7 +643,7 @@ function blankQuestion() {
     latitude: "",
     longitude: "",
     difficulty: "easy",
-    category: "",
+    category: "settlements",
   };
 }
 

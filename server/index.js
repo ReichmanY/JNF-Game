@@ -5,7 +5,8 @@ import { randomUUID } from "node:crypto";
 import { appRoot } from "./paths.js";
 import express from "express";
 import cors from "cors";
-import { pickRound, scoreGuess, sanitizeQuestion, timerFor, splitDifficulties } from "../shared/scoring.js";
+import { pickRound, scoreGuess, sanitizeQuestion, timerFor } from "../shared/scoring.js";
+import { DEFAULT_FAMILY_MIX, splitFamilyCounts } from "../shared/families.js";
 import { APP_VERSION, APP_VERSION_LABEL } from "../shared/version.js";
 import { clearPlayers, maybeResetLeaderboard, publicBoard, readStore, toCsv, upsertScore } from "./store.js";
 import {
@@ -371,12 +372,13 @@ function mergeConfig(current, patch) {
     }
     const n = Number(patch.game.questionsPerGame ?? next.game.questionsPerGame ?? 10);
     next.game.questionsPerGame = Math.max(1, Math.round(n));
-    const split = splitDifficulties(next.game.questionsPerGame);
-    next.game.questionsPerDifficulty = {
-      easy: split.easy,
-      medium: split.medium,
-      hard: split.hard,
-    };
+    const mix = { ...DEFAULT_FAMILY_MIX, ...(next.game.familyMix || {}), ...(patch.game.familyMix || {}) };
+    for (const key of Object.keys(mix)) {
+      const value = Number(mix[key]);
+      mix[key] = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : DEFAULT_FAMILY_MIX[key];
+    }
+    next.game.familyMix = mix;
+    next.game.questionsPerFamily = splitFamilyCounts(next.game.questionsPerGame, mix);
     next.game.requireGuessConfirm = Boolean(
       patch.game.requireGuessConfirm ?? next.game.requireGuessConfirm
     );

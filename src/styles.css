@@ -127,6 +127,49 @@ button {
   border-color: var(--gold-500);
 }
 
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.password-wrap input {
+  flex: 1;
+  min-width: 0;
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  background: transparent;
+  color: var(--teal-800);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 999px;
+}
+
+.password-toggle svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: block;
+}
+
+.password-toggle:hover {
+  background: var(--sand-100);
+}
+
+.password-toggle:focus-visible {
+  outline: 3px solid rgba(187, 129, 0, 0.35);
+  outline-offset: 2px;
+}
+
 .field .error {
   color: var(--danger);
   font-size: 0.8rem;
@@ -311,6 +354,8 @@ button {
 .play {
   background: var(--teal-900);
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
 }
 
 .play .brand-bar {
@@ -418,12 +463,48 @@ button {
   overflow: hidden;
   position: relative;
   box-shadow: var(--shadow);
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .map-wrap .leaflet-container {
   width: 100%;
   height: 100%;
   background: #d7cbb8;
+  touch-action: none;
+}
+
+.city-label {
+  background: none !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+.city-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--teal-900);
+  box-shadow: 0 0 0 1.5px #fff;
+}
+
+.city-label span {
+  display: inline-block;
+  transform: translate(-50%, -1.35rem);
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: #0d4d5c;
+  text-shadow:
+    0 0 4px #fff,
+    0 1px 2px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .leaflet-control-attribution,
@@ -494,6 +575,26 @@ button {
 .stat .value {
   font-family: var(--display);
   font-size: 1.25rem;
+}
+
+.cheer {
+  grid-column: 1 / -1;
+  margin: 0.15rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.cheer-up {
+  background: #e7f4f7;
+  color: var(--teal-900);
+}
+
+.cheer-down {
+  background: #f7efe0;
+  color: #6b4a10;
 }
 
 /* Results */
@@ -670,7 +771,11 @@ th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; colo
   margin: 0.8rem 0 1rem;
 }
 
-.filter-tabs { margin: 0; max-width: 420px; }
+.filter-tabs {
+  margin: 0;
+  max-width: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 
 .q-list { display: grid; gap: 0.7rem; }
 

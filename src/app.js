@@ -5,8 +5,8 @@ import { validateGuest, validateRegistered, firstError } from "./validate.js";
 import { formatDistance, formatScore } from "../shared/geo.js";
 import { APP_VERSION_LABEL } from "../shared/version.js";
 import { scoreGuess, timerFor, sanitizeQuestion } from "../shared/scoring.js";
-
-const DIFF_LABEL = { easy: "Easy", medium: "Medium", hard: "Hard" };
+import { emptyCheerState, pickQuestionCheer } from "./cheer.js";
+import { familyLabel } from "../shared/families.js";
 
 export function createApp(root, { config, questions }) {
   const api = createApi();
@@ -35,6 +35,7 @@ export function createApp(root, { config, questions }) {
     map: null,
     autoNext: null,
     busy: false,
+    cheer: emptyCheerState(),
   };
 
   function questionAt(index) {
@@ -69,7 +70,7 @@ export function createApp(root, { config, questions }) {
         <div class="hero">
           <div class="eyebrow">Map challenge</div>
           <h1>${brand.gameTitle}</h1>
-          <p>${brand.tagline} ${n} places. Rising difficulty. Tap the map of Israel and race the clock.</p>
+          <p>${brand.tagline} ${n} places. Tap the map of Israel and race the clock.</p>
         </div>
         <div class="landing-actions">
           <button class="btn btn-primary btn-wide" data-go="identity">Start Game</button>
@@ -143,7 +144,7 @@ export function createApp(root, { config, questions }) {
             <article class="how-card"><div class="num">1</div><div><strong>Read the clue</strong><p class="muted tiny">Each round names a place, with a short hint and photo when available.</p></div></article>
             <article class="how-card"><div class="num">2</div><div><strong>Tap the map${game.requireGuessConfirm ? ", then confirm" : ""}</strong><p class="muted tiny">${confirmText}</p></div></article>
             <article class="how-card"><div class="num">3</div><div><strong>Accuracy + speed</strong><p class="muted tiny">Closer and faster scores more — up to 5,000 points per place. The clock is visible on every question.</p></div></article>
-            <article class="how-card"><div class="num">4</div><div><strong>${n} questions, rising challenge</strong><p class="muted tiny">Difficulty increases through the round. If time runs out, that question scores zero.</p></div></article>
+            <article class="how-card"><div class="num">4</div><div><strong>${n} questions, mixed places</strong><p class="muted tiny">Each round mixes settlements, JNF sites, and general sites in random order. If time runs out, that question scores zero.</p></div></article>
           </div>
           <button class="btn btn-primary btn-wide" data-action="begin">Start</button>
         </div>
@@ -173,18 +174,24 @@ export function createApp(root, { config, questions }) {
         <div>
           <h2>${escapeHtml(q.name)}</h2>
           <p>${escapeHtml(q.hint)}</p>
-          <span class="diff">${DIFF_LABEL[q.difficulty] || q.difficulty}</span>
+          <span class="diff">${escapeHtml(familyLabel(q.category))}</span>
         </div>
       </div>
     `;
   }
 
   function feedbackHTML() {
+    const cheer = state.feedback.cheer;
     return `
       <div class="feedback-panel">
         <div class="stat"><div class="label">Distance</div><div class="value">${state.feedback.timedOut ? "Time up" : formatDistance(state.feedback.distanceKm)}</div></div>
         <div class="stat"><div class="label">This place</div><div class="value">+${formatScore(state.feedback.questionScore)}</div></div>
         <div class="stat"><div class="label">Total</div><div class="value">${formatScore(state.total)}</div></div>
+        ${
+          cheer
+            ? `<p class="cheer cheer-${cheer.kind}">${escapeHtml(cheer.text)}</p>`
+            : ""
+        }
       </div>
     `;
   }
@@ -517,6 +524,7 @@ export function createApp(root, { config, questions }) {
     state.guess = null;
     state.feedback = null;
     state.summary = null;
+    state.cheer = emptyCheerState();
     try {
       const session = await api.startSession(state.player, questions, game);
       state.sessionId = session.sessionId;
@@ -624,7 +632,8 @@ export function createApp(root, { config, questions }) {
     };
     state.results.push(entry);
     state.total += scored.questionScore;
-    state.feedback = { ...scored, timedOut, correct: scored.correct };
+    const cheer = pickQuestionCheer(scored.questionScore, state.cheer);
+    state.feedback = { ...scored, timedOut, correct: scored.correct, cheer };
     if (timedOut) state.guess = null;
     render();
   }

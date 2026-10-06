@@ -19,8 +19,8 @@ internal static class Program
         }
 
         var versionFile = Path.Combine(root, "VERSION.txt");
-        var version = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "1.0.1";
-        if (string.IsNullOrEmpty(version)) version = "1.0.1";
+        var version = File.Exists(versionFile) ? File.ReadAllText(versionFile).Trim() : "1.0.2";
+        if (string.IsNullOrEmpty(version)) version = "1.0.2";
 
         Console.Title = "Green Horizons v" + version + " — Guess the Place";
         Console.WriteLine("Starting Green Horizons " + version + "...");
