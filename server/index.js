@@ -203,8 +203,12 @@ routes.get("/api/admin/export", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Invalid admin PIN." });
   const store = await withStore();
   const players = [...store.players].sort((a, b) => b.highScore - a.highScore);
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  const filename = `green-horizons-leaderboard-${stamp}.csv`;
   res.setHeader("Content-Type", "text/csv");
-  res.setHeader("Content-Disposition", "attachment; filename=green-horizons-leaderboard.csv");
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
   res.send(toCsv(players));
 });
 

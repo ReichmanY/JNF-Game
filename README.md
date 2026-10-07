@@ -2,7 +2,7 @@
 
 A web map-guessing game for the JNF-USA / Green Horizons (Chugei Siyarot) annual conference. Players read a clue, tap the map of Israel, and score points for accuracy and speed.
 
-Current release: **v1.0.2** (set in `package.json` and `shared/version.js`).
+Current release: **v1.0.3** (set in `package.json` and `shared/version.js`).
 
 The interface is English-only and works on desktop, tablet, and phone — including a conference booth kiosk.
 
