@@ -1,7 +1,8 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync, chmodSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { chmodSync, cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { basename, dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { crc32, deflateRawSync } from "node:zlib";
 import { build } from "esbuild";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -20,6 +21,103 @@ function run(command, args, extraEnv = {}) {
   if (result.status !== 0) {
     throw new Error(`${command} failed`);
   }
+}
+
+function u16(n) {
+  const buf = Buffer.alloc(2);
+  buf.writeUInt16LE(n);
+  return buf;
+}
+
+function u32(n) {
+  const buf = Buffer.alloc(4);
+  buf.writeUInt32LE(n);
+  return buf;
+}
+
+function collectFiles(dir, list = []) {
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    if (statSync(full).isDirectory()) collectFiles(full, list);
+    else list.push(full);
+  }
+  return list;
+}
+
+function zipFolder(folder, zipPath) {
+  const files = collectFiles(folder);
+  const folderName = basename(folder);
+  const locals = [];
+  const centrals = [];
+  let offset = 0;
+
+  for (const file of files) {
+    const data = readFileSync(file);
+    const compressed = deflateRawSync(data);
+    const name = `${folderName}/${relative(folder, file).split(sep).join("/")}`;
+    const nameBuf = Buffer.from(name, "utf8");
+    const crc = crc32(data);
+    const mtime = statSync(file).mtime;
+    const year = Math.max(mtime.getFullYear(), 1980);
+    const dosDate = ((year - 1980) << 9) | ((mtime.getMonth() + 1) << 5) | mtime.getDate();
+    const dosTime = (mtime.getHours() << 11) | (mtime.getMinutes() << 5) | (mtime.getSeconds() >> 1);
+    const local = Buffer.concat([
+      Buffer.from("PK\x03\x04"),
+      u16(20),
+      u16(0),
+      u16(8),
+      u16(dosTime),
+      u16(dosDate),
+      u32(crc),
+      u32(compressed.length),
+      u32(data.length),
+      u16(nameBuf.length),
+      u16(0),
+      nameBuf,
+      compressed,
+    ]);
+    locals.push(local);
+    centrals.push(
+      Buffer.concat([
+        Buffer.from("PK\x01\x02"),
+        u16(20),
+        u16(20),
+        u16(0),
+        u16(8),
+        u16(dosTime),
+        u16(dosDate),
+        u32(crc),
+        u32(compressed.length),
+        u32(data.length),
+        u16(nameBuf.length),
+        u16(0),
+        u16(0),
+        u16(0),
+        u16(0),
+        u32(0),
+        u32(offset),
+        nameBuf,
+      ])
+    );
+    offset += local.length;
+  }
+
+  const central = Buffer.concat(centrals);
+  writeFileSync(
+    zipPath,
+    Buffer.concat([
+      ...locals,
+      central,
+      Buffer.from("PK\x05\x06"),
+      u16(0),
+      u16(0),
+      u16(files.length),
+      u16(files.length),
+      u32(central.length),
+      u32(offset),
+      u16(0),
+    ])
+  );
 }
 
 rmSync(out, { recursive: true, force: true });
@@ -268,18 +366,7 @@ WantedBy=multi-user.target
 const zip = join(root, "release", `GreenHorizons-v${version}-wordpress.zip`);
 rmSync(zip, { force: true });
 console.log("Creating zip...");
-const zipResult = spawnSync(
-  "powershell",
-  [
-    "-NoProfile",
-    "-Command",
-    `Compress-Archive -Path '${out}' -DestinationPath '${zip}' -CompressionLevel Optimal`,
-  ],
-  { stdio: "inherit" }
-);
-if (zipResult.status !== 0) {
-  throw new Error("zip failed");
-}
+zipFolder(out, zip);
 
 console.log(`\nSite package ready: ${out}`);
 console.log(`Zip: ${zip}`);
