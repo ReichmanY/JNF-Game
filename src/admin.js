@@ -1,7 +1,6 @@
 import "./styles.css";
 import { withBase } from "./base.js";
 import { createIsraelMap } from "./map.js";
-import { brandBar } from "./brand.js";
 import { APP_VERSION_LABEL } from "../shared/version.js";
 import { FAMILIES, familyLabel, splitFamilyCounts, DEFAULT_FAMILY_MIX } from "../shared/families.js";
 
@@ -36,7 +35,6 @@ async function boot() {
 function renderLogin() {
   root.innerHTML = `
     <section class="screen sheet">
-      ${brandBar()}
       <div class="sheet-inner">
         <div class="eyebrow">${escapeHtml(state.config.brand.programName)}</div>
         <h1>Staff console</h1>
@@ -125,7 +123,6 @@ function render() {
     if (counts[q.category] !== undefined) counts[q.category] += 1;
   }
   root.innerHTML = `
-    ${brandBar()}
     <div class="admin-shell">
       <div class="admin-head">
         <div>

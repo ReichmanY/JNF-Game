@@ -1,7 +1,6 @@
 import { withBase } from "./base.js";
 import { createIsraelMap } from "./map.js";
 import { createApi } from "./api.js";
-import { brandBar } from "./brand.js";
 import { validateGuest, validateRegistered, firstError } from "./validate.js";
 import { formatDistance, formatScore } from "../shared/geo.js";
 import { APP_VERSION_LABEL } from "../shared/version.js";
@@ -67,7 +66,6 @@ export function createApp(root, { config, questions }) {
     const n = game.questionsPerGame || 10;
     return `
       <section class="screen landing">
-        ${brandBar()}
         <div class="hero">
           <div class="eyebrow">Map challenge</div>
           <h1>${brand.gameTitle}</h1>
@@ -86,7 +84,6 @@ export function createApp(root, { config, questions }) {
     const { mode, name, email, phone, consent } = state.form;
     return `
       <section class="screen sheet">
-        ${brandBar()}
         <div class="sheet-inner">
           <div class="eyebrow">${brand.programName}</div>
           <h1>Who is playing?</h1>
@@ -137,7 +134,6 @@ export function createApp(root, { config, questions }) {
       : "Tap the map once to place your guess. That tap is scored immediately.";
     return `
       <section class="screen sheet">
-        ${brandBar()}
         <div class="sheet-inner">
           <div class="eyebrow">How to play</div>
           <h1>Guess the location of each place on the map of Israel.</h1>
@@ -220,7 +216,6 @@ export function createApp(root, { config, questions }) {
   function play() {
     return `
       <section class="screen play">
-        ${brandBar()}
         <div class="play-top">${playTopHTML()}</div>
         <div class="play-body">
           ${state.feedback ? feedbackHTML() : clueHTML()}
@@ -292,7 +287,6 @@ export function createApp(root, { config, questions }) {
 
     return `
       <section class="screen results">
-        ${brandBar()}
         <div class="results-inner">
           <div class="score-hero">
             <div class="eyebrow">Total score</div>

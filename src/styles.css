@@ -185,38 +185,6 @@ button {
 
 .check input { margin-top: 0.25rem; width: 1.1rem; height: 1.1rem; }
 
-/* Brand header */
-.brand-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.8rem;
-  background: var(--teal-900);
-  padding: 0.55rem 1.1rem;
-  min-height: 76px;
-  flex-shrink: 0;
-}
-
-.brand-bar img {
-  display: block;
-  object-fit: contain;
-  background: #fff;
-  border-radius: 10px;
-  padding: 0.2rem 0.35rem;
-}
-
-.brand-bar .logo-side {
-  height: 52px;
-  width: auto;
-  max-width: 28vw;
-}
-
-.brand-bar .logo-center {
-  height: 58px;
-  width: auto;
-  max-width: 36vw;
-}
-
 /* Landing */
 .landing {
   position: relative;
@@ -228,7 +196,7 @@ button {
 }
 
 .landing .hero {
-  padding: 1.4rem 1.3rem 0;
+  padding: calc(1.4rem + var(--safe-top)) 1.3rem 0;
 }
 
 .eyebrow {
@@ -291,7 +259,7 @@ button {
 .sheet-inner {
   width: min(720px, 100%);
   margin: 0 auto;
-  padding: 1.2rem 1.2rem calc(1.4rem + var(--safe-bottom));
+  padding: calc(1.2rem + var(--safe-top)) 1.2rem calc(1.4rem + var(--safe-bottom));
 }
 
 .sheet h1, .sheet h2 {
@@ -357,14 +325,6 @@ button {
   overscroll-behavior: none;
   touch-action: manipulation;
 }
-
-.play .brand-bar {
-  min-height: 58px;
-  padding: 0.35rem 0.8rem;
-}
-
-.play .brand-bar .logo-side { height: 38px; }
-.play .brand-bar .logo-center { height: 42px; }
 
 .play-top {
   display: flex;
@@ -605,7 +565,7 @@ button {
 .results-inner {
   width: min(900px, 100%);
   margin: 0 auto;
-  padding: 1.1rem 1.1rem calc(1.3rem + var(--safe-bottom));
+  padding: calc(1.1rem + var(--safe-top)) 1.1rem calc(1.3rem + var(--safe-bottom));
 }
 
 .score-hero {
@@ -704,7 +664,7 @@ th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; colo
 .admin-shell {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 1.4rem 1rem 2rem;
+  padding: calc(1.4rem + var(--safe-top)) 1rem 2rem;
 }
 
 .admin-stats {
